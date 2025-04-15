@@ -1,10 +1,4 @@
 node_modules
 dist
-src/database/db.sqlite
 .env
-*.zip
-deploy.js
-squarecloud.config
-environment.d.ts
-tokens.ts
-discloud
+db.sqlite

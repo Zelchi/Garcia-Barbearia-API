@@ -5,24 +5,20 @@ export class AgendaEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column()
+    @Column({ type: "varchar", length: 255 })
     name: string;
 
-    @Column()
-    user: string;
+    @Column({ type: "varchar", length: 255 })
+    userID: string;
 
-    @Column()
+    @Column({ type: "varchar", length: 255 })
     date: string;
 
-    @Column()
+    @Column({ type: "varchar", length: 255 })
     creation: Date;
 
     @DeleteDateColumn()
     deletedAt?: Date | null;
-
-    get isDeleted(): boolean {
-        return !!this.deletedAt;
-    }
 
     constructor(
         name: string,
@@ -30,7 +26,7 @@ export class AgendaEntity {
         date: string,
     ) {
         this.name = name;
-        this.user = user;
+        this.userID = user;
         this.date = date;
         this.creation = new Date();
     }

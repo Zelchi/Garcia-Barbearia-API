@@ -3,7 +3,7 @@ import { db } from "./AgendaRepository";
 
 export class AgendaController {
 
-    public userCreate = async (req: Request, res: Response): Promise<void> => {
+    public userPost = async (req: Request, res: Response): Promise<void> => {
         const { user, date, name } = req.body;
 
         if (!user || !date || !name) {
@@ -72,23 +72,6 @@ export class AgendaController {
         }
     }
 
-    public getAll = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const agendamentos = await db.buscarTodosAgendamentos();
-            if (agendamentos) {
-                res.status(200).send(agendamentos);
-                return;
-            } else {
-                res.status(404).send("Nenhum agendamento encontrado");
-                return;
-            }
-        } catch (error) {
-            console.error("< Agendamentos -> Controller -> Erro ao buscar todos os agendamentos:", error);
-            res.status(500).send("Erro ao buscar agendamentos");
-            return;
-        }
-    }
-
     public userDelete = async (req: Request, res: Response): Promise<void> => {
         const { id } = req.body;
         if (!id) {
@@ -104,6 +87,23 @@ export class AgendaController {
                 res.status(500).send("Erro ao deletar agendamento");
                 return;
             }
+        }
+    }
+
+    public getAll = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const agendamentos = await db.buscarTodosAgendamentos();
+            if (agendamentos) {
+                res.status(200).send(agendamentos);
+                return;
+            } else {
+                res.status(404).send("Nenhum agendamento encontrado");
+                return;
+            }
+        } catch (error) {
+            console.error("< Agendamentos -> Controller -> Erro ao buscar todos os agendamentos:", error);
+            res.status(500).send("Erro ao buscar agendamentos");
+            return;
         }
     }
 }

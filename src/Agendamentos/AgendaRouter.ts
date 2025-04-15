@@ -4,7 +4,7 @@ const router = express.Router();
 import { agendaController } from "./AgendaController";
 
 // Rota de criação de agendamento
-router.post("/post", (req, res) => agendaController.userCreate(req, res));
+router.post("/post", (req, res) => agendaController.userPost(req, res));
 
 // Rota para apagar agendamento
 router.delete("/delete", (req, res) => agendaController.userDelete(req, res));

@@ -26,13 +26,13 @@ class AgendaRepository {
         return agendamento;
     }
 
-    verificarAgendamento = async (user: string): Promise<AgendaEntity | null> => {
-        const agendamento = await this.database.findOneBy({ user });
+    verificarAgendamento = async (userID: string): Promise<AgendaEntity | null> => {
+        const agendamento = await this.database.findOneBy({ userID });
         return agendamento;
     }
 
-    buscarAgendamentoUsuario = async (user: string): Promise<AgendaEntity[] | null> => {
-        return await this.database.findBy({ user });
+    buscarAgendamentoUsuario = async (userID: string): Promise<AgendaEntity[] | null> => {
+        return await this.database.findBy({ userID });
     }
 
     buscarTodosAgendamentos = async (): Promise<AgendaEntity[] | null> => {

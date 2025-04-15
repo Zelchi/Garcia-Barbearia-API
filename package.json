@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server.ts",
-    "build": "tsc",
+    "build": "npx esbuild server.ts --bundle --platform=node --outfile=dist/server.js --minify --external:sqlite3",
     "start": "node dist/server.js"
   },
   "dependencies": {
@@ -12,7 +12,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
-    "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.20"
@@ -24,6 +23,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.1",
     "@typescript-eslint/parser": "^8.16.0",
+    "esbuild": "^0.25.2",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "nodemon": "^3.1.7",
