@@ -3,6 +3,8 @@ const router = express.Router();
 
 import { agendaController } from "./AgendaController";
 
+// Middleware para verificar se o usuário está autenticado
+router.use((req, res, next) => {agendaController.middleware(req, res, next)});
 // Rota para visualizar agendamento
 router.get("/", (req, res) => agendaController.userGet(req, res));
 router.get("/:id", (req, res) => agendaController.userGet(req, res));

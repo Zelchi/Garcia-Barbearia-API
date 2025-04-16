@@ -10,6 +10,9 @@ app.use(cors({
     origin: allowedOrigins
 }));
 
+import usuarios from "./Usuarios/UserRouter";
+app.use("/api/usuarios", usuarios);
+
 import agendamentos from "./Agendamentos/AgendaRouter";
 app.use("/api/agendamentos", agendamentos);
 
