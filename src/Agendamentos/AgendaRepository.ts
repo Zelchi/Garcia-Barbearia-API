@@ -9,8 +9,8 @@ class AgendaRepository {
         this.database = repository;
     }
 
-    criarAgendamento = async (user: string, name: string, date: string): Promise<boolean> => {
-        const contaEntity = new AgendaEntity(name, user, date);
+    criarAgendamento = async (userID: number, name: string, date: string): Promise<boolean> => {
+        const contaEntity = new AgendaEntity(name, userID, date);
         try {
             await this.database.save(contaEntity);
             return true;
@@ -26,12 +26,12 @@ class AgendaRepository {
         return agendamento;
     }
 
-    verificarAgendamento = async (userID: string): Promise<AgendaEntity | null> => {
+    verificarAgendamento = async (userID: number): Promise<AgendaEntity | null> => {
         const agendamento = await this.database.findOneBy({ userID });
         return agendamento;
     }
 
-    buscarAgendamentoUsuario = async (userID: string): Promise<AgendaEntity[] | null> => {
+    buscarAgendamentoUsuario = async (userID: number): Promise<AgendaEntity[] | null> => {
         return await this.database.findBy({ userID });
     }
 

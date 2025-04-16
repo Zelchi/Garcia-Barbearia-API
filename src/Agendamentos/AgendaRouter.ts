@@ -3,16 +3,12 @@ const router = express.Router();
 
 import { agendaController } from "./AgendaController";
 
-// Rota de criação de agendamento
-router.post("/post", (req, res) => agendaController.userPost(req, res));
-
-// Rota para apagar agendamento
-router.delete("/delete", (req, res) => agendaController.userDelete(req, res));
-
 // Rota para visualizar agendamento
-router.get("/getuser", (req, res) => agendaController.userGet(req, res));
-
-// Rota para visualizar todos os agendamentos (admin)
-router.get("/getall", (req, res) => agendaController.getAll(req, res));
+router.get("/", (req, res) => agendaController.userGet(req, res));
+router.get("/:id", (req, res) => agendaController.userGet(req, res));
+// Rota de criação de agendamento
+router.post("/", (req, res) => agendaController.userPost(req, res));
+// Rota para apagar agendamento
+router.delete("/:id", (req, res) => agendaController.userDelete(req, res));
 
 export default router;

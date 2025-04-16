@@ -5,6 +5,7 @@ export class AgendaController {
 
     public userPost = async (req: Request, res: Response): Promise<void> => {
         const { user, date, name } = req.body;
+        const userID = Number(user);
 
         if (!user || !date || !name) {
             res.status(400).send("Nome e data são obrigatórios");
@@ -15,7 +16,7 @@ export class AgendaController {
         const hora = data.getHours();
         const min = data.getMinutes();
         const dia = data.getDay();
-    
+
         if (dia === 0) {
             res.status(400).send("Agendamentos só podem ser feitos de Segunda-feira a Sábado");
             return;
@@ -31,7 +32,7 @@ export class AgendaController {
         }
 
         try {
-            if (await db.verificarAgendamento(user)) {
+            if (await db.verificarAgendamento(userID)) {
                 res.status(409).send("Agendamento já existe para este usuário!");
                 return;
             }
@@ -39,7 +40,7 @@ export class AgendaController {
                 res.status(401).send("Data já existe!");
                 return;
             }
-            await db.criarAgendamento(user, name, date);
+            await db.criarAgendamento(userID, name, date);
             res.status(201).send("Agendamento criado com sucesso");
             return;
         } catch (error) {
@@ -50,13 +51,22 @@ export class AgendaController {
     }
 
     public userGet = async (req: Request, res: Response): Promise<void> => {
-        const { user } = req.body;
-        if (!user) {
-            res.status(400).send("Nome é obrigatório");
-            return;
+        const { id } = req.params;
+        const userID = Number(id);
+
+        if (!id) {
+            try {
+                const agendamentos = await db.buscarTodosAgendamentos();
+                res.status(200).send(agendamentos);
+                return;
+            } catch (error) {
+                console.error("< Agendamentos -> Controller -> Erro ao buscar todos os agendamentos:", error);
+                res.status(500).send("Erro ao buscar agendamentos");
+                return;
+            }
         } else {
             try {
-                const agendamentos = await db.buscarAgendamentoUsuario(user);
+                const agendamentos = await db.buscarAgendamentoUsuario(userID);
                 if (agendamentos) {
                     res.status(200).send(agendamentos);
                     return;
@@ -73,13 +83,13 @@ export class AgendaController {
     }
 
     public userDelete = async (req: Request, res: Response): Promise<void> => {
-        const { id } = req.body;
+        const { id } = req.params;
         if (!id) {
             res.status(400).send("ID é obrigatório");
             return;
         } else {
             try {
-                await db.deletarAgendamento(id);
+                await db.deletarAgendamento(Number(id));
                 res.status(200).send("Agendamento deletado com sucesso");
                 return;
             } catch (error) {
@@ -87,23 +97,6 @@ export class AgendaController {
                 res.status(500).send("Erro ao deletar agendamento");
                 return;
             }
-        }
-    }
-
-    public getAll = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const agendamentos = await db.buscarTodosAgendamentos();
-            if (agendamentos) {
-                res.status(200).send(agendamentos);
-                return;
-            } else {
-                res.status(404).send("Nenhum agendamento encontrado");
-                return;
-            }
-        } catch (error) {
-            console.error("< Agendamentos -> Controller -> Erro ao buscar todos os agendamentos:", error);
-            res.status(500).send("Erro ao buscar agendamentos");
-            return;
         }
     }
 }

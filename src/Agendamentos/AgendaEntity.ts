@@ -1,33 +1,32 @@
 import { PrimaryGeneratedColumn, Column, Entity, DeleteDateColumn } from "typeorm";
 
-@Entity()
+@Entity("Agendamentos")
 export class AgendaEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ type: "varchar", length: 255 })
+    @Column({ type: "varchar", length: 100 })
     name: string;
 
-    @Column({ type: "varchar", length: 255 })
-    userID: string;
+    @Column({ type: "integer" })
+    userID: number;
 
-    @Column({ type: "varchar", length: 255 })
+    @Column({ type: "varchar", length: 25 })
     date: string;
 
-    @Column({ type: "varchar", length: 255 })
-    creation: Date;
+    @Column({ type: "date", default: () => "CURRENT_TIMESTAMP" })
+    creation!: Date;
 
-    @DeleteDateColumn()
+    @DeleteDateColumn({ type: "date", nullable: true })
     deletedAt?: Date | null;
 
     constructor(
         name: string,
-        user: string,
+        userID: number,
         date: string,
     ) {
         this.name = name;
-        this.userID = user;
+        this.userID = userID;
         this.date = date;
-        this.creation = new Date();
     }
 }
