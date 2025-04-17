@@ -5,7 +5,8 @@ import jwt from "jsonwebtoken";
 
 export class UserController {
     public userPost = async (req: Request, res: Response) => {
-        const { credential, clientId, authorization } = req.body;
+        const { credential, clientId } = req.body;
+        const { authorization } = req.headers;
 
         if (credential && clientId) {
             const client = new OAuth2Client(clientId, credential);
@@ -40,7 +41,8 @@ export class UserController {
         }
 
         if (authorization) {
-            jwt.verify(authorization, process.env.JWT!, (err: any) => {
+            const token = req.headers["authorization"]?.split(" ")[1];
+            jwt.verify(token!, process.env.JWT!, (err: any) => {
                 if (err) {
                     res.status(401).json({ message: "Token inválido" });
                     return;
