@@ -5,9 +5,13 @@ import cors from "cors";
 const app = express();
 app.use(express.json());
 
-const allowedOrigins = process.env.NODE_ENV === "DEV" ? ["http://localhost:3000"] : [];
+const allowedOrigins = "http://localhost:5173"
 app.use(cors({
-    origin: allowedOrigins
+    origin: allowedOrigins,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+    optionsSuccessStatus: 200,
 }));
 
 import usuarios from "./Usuarios/UserRouter";

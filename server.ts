@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import app from "./src/app";
 import dotenv from "dotenv"; dotenv.config();
 
-const PORT: number = Number(process.env.PORT) || 3000;
+const PORT = 3000;
 
 app.listen(PORT)
 
