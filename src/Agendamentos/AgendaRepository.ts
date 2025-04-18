@@ -12,7 +12,7 @@ class AgendaRepository {
         this.userDatabase = userRepository;
     }
 
-    criarAgendamento = async (userId: number, name: string, date: string): Promise<boolean> => {
+    criarAgendamento = async (userId: number, name: string, hora: string, dia: string): Promise<boolean> => {
         try {
             if (!name) {
                 throw new Error("O campo 'name' é obrigatório.");
@@ -23,7 +23,7 @@ class AgendaRepository {
                 throw new Error("Usuário não encontrado");
             }
     
-            const contaEntity = new AgendaEntity(name, date);
+            const contaEntity = new AgendaEntity(name, hora, dia);
             contaEntity.user = user;
     
             await this.database.save(contaEntity);
@@ -34,9 +34,8 @@ class AgendaRepository {
         }
     };
 
-    verificarData = async (date: string): Promise<AgendaEntity | null> => {
-        const agendamento = await this.database.findOneBy({ date });
-        return agendamento;
+    verificarDia = async (dia: string): Promise<AgendaEntity[]> => {
+        return await this.database.findBy({ dia });
     };
 
     verificarAgendamento = async (user: number): Promise<AgendaEntity | null> => {

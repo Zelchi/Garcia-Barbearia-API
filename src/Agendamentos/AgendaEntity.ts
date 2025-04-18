@@ -6,8 +6,11 @@ export class AgendaEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ type: "varchar", length: 25 })
-    date: string;
+    @Column({ type: "varchar", length: 8 })
+    dia: string;
+
+    @Column({ type: "varchar", length: 5 })
+    hora: string;
 
     @Column({ type: "varchar", length: 100 })
     name: string;
@@ -23,9 +26,11 @@ export class AgendaEntity {
 
     constructor(
         name: string,
-        date: string,
+        hora: string,
+        dia: string,
     ) {
-        this.date = date;
         this.name = name;
+        this.hora = hora;
+        this.dia = dia;
     }
 }

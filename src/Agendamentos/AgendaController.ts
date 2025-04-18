@@ -3,6 +3,7 @@ import { db } from "./AgendaRepository";
 import jwt from "jsonwebtoken";
 
 export class AgendaController {
+
     public middleware = (req: Request, res: Response, next: NextFunction) => {
         const pegaToken = req.headers.authorization;
         const token = pegaToken?.split(" ")[1];
@@ -50,6 +51,9 @@ export class AgendaController {
                 return;
             }
 
+            const diaFormatada = date.split("T")[0];
+            const horaFormatada = date.split("T")[1].replace(/:00$/, "");
+
             const hora = data.getHours();
             const min = data.getMinutes();
             const dia = data.getDay();
@@ -69,12 +73,13 @@ export class AgendaController {
                 return;
             }
 
-            if (await db.verificarData(date)) {
+            const diaMarcado = await db.verificarDia(date.split("T")[0])
+            if (diaMarcado.length > 0) {
                 res.status(401).send("Data já existe!");
                 return;
             }
 
-            if (await db.criarAgendamento(decoded.id, decoded.name, date)) {
+            if (await db.criarAgendamento(decoded.id, decoded.name, horaFormatada, diaFormatada)) {
                 res.status(201).send("Agendamento criado com sucesso");
             } else {
                 res.status(500).send("Erro ao criar agendamento");
@@ -135,6 +140,81 @@ export class AgendaController {
             }
         }
     };
-}
+
+    public diasGet = async (req: Request, res: Response): Promise<void> => {
+        const diasDisponiveis: { dia: string, data: string }[] = [];
+
+        try {
+            const dataAtual = new Date();
+
+            for (let i = 1; i <= 7; i++) {
+                const dia = new Date(dataAtual);
+                dia.setDate(dataAtual.getDate() + i);
+
+                if (dia.getDay() !== 0) {
+                    const diaFormatado = dia.toISOString().split("T")[0];
+                    diasDisponiveis.push({
+                        dia: dia.getDay().toString(),
+                        data: diaFormatado || ""
+                    });
+                }
+            }
+
+            if (diasDisponiveis.length > 0) {
+                res.status(200).json(diasDisponiveis);
+                return;
+            } else {
+                res.status(404).send("Nenhum dia disponível para agendamento");
+                return;
+            }
+        } catch (error) {
+            console.error("Agendamentos -> Controller -> Erro ao buscar dias disponíveis:", error);
+            res.status(500).send("Erro ao buscar dias disponíveis");
+            return;
+        }
+    };
+
+    public horariosGet = async (req: Request, res: Response): Promise<void> => {
+        const { data } = req.body;
+
+        if (!data) {
+            res.status(400).send("Data é obrigatória");
+            return;
+        }
+
+        const partesData = data.split("-");
+        if (partesData.length !== 3) {
+            res.status(400).send("Formato de data inválido. Use DD-MM-YY");
+            return;
+        }
+
+        const horariosDisponiveis: { hora: string, disponivel: boolean }[] = [];
+        const horariosPadrao = [
+            "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
+            "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
+            "17:00", "17:30", "18:00"
+        ];
+
+        try {
+            const agendamentos = await db.verificarDia(data);
+            console.log("Agendamentos encontrados:", agendamentos);
+            const horariosOcupados = agendamentos.map((agendamento) => agendamento.hora);
+
+            horariosPadrao.forEach((hora) => {
+                horariosDisponiveis.push({
+                    hora,
+                    disponivel: !horariosOcupados.includes(hora)
+                });
+            });
+
+            res.status(200).json(horariosDisponiveis);
+            return;
+        } catch (error) {
+            console.error("Agendamentos -> Controller -> Erro ao buscar horários disponíveis:", error);
+            res.status(500).send("Erro ao buscar horários disponíveis");
+            return;
+        }
+    }
+};
 
 export const agendaController = new AgendaController();
