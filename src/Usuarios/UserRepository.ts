@@ -8,14 +8,14 @@ class UserRepository {
         this.database = repository;
     }
 
-    criarUsuario = async (name: string, email: string): Promise<UserEntity | boolean> => {
+    criarUsuario = async (name: string, email: string): Promise<UserEntity | null> => {
         const userEntity = new UserEntity(name, email);
         try {
             return await this.database.save(userEntity);
         }
         catch (error) {
             console.error("UserRepository -> criarUsuario -> ", error);
-            return false;
+            return null;
         }
     }
 

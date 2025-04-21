@@ -18,9 +18,10 @@ export class UserController {
                 const payload = ticket.getPayload();
                 if (payload) {
                     const { name, email } = payload;
-                    const usuario = await db.verificarUsuario(email!);
+                    let usuario = await db.verificarUsuario(email!);
                     if (!usuario) {
-                        await db.criarUsuario(name!, email!);
+                        usuario = await db.criarUsuario(name!, email!);
+                        if (!usuario) new Error("Erro ao criar usuário");
                     }
                     const token = jwt.sign(
                         { id: usuario?.id, name: usuario?.name, email: usuario?.email },
