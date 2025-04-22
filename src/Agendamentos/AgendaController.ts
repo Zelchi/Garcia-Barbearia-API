@@ -6,7 +6,6 @@ export class AgendaController {
     public middleware = (req: Request, res: Response, next: NextFunction) => {
         const pegaToken = req.headers.authorization;
         const token = pegaToken?.split(" ")[1];
-        console.log(token);
 
         if (!token) {
             res.status(401).send("Token não informado ou mal formatado");
@@ -44,7 +43,6 @@ export class AgendaController {
 
         try {
             const decoded = jwt.decode(token as string) as { id: number; name: string };
-            console.log("Decoded:", decoded.name);
             const data = new Date(date);
 
             if (isNaN(data.getTime())) {
@@ -239,7 +237,6 @@ export class AgendaController {
 
         try {
             const agendamentos = await db.verificarDia(data);
-            console.log("Agendamentos encontrados:", agendamentos);
             const horariosOcupados = agendamentos.map(
                 (agendamento) => agendamento.hora
             );

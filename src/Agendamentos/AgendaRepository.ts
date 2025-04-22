@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { Repository, MoreThan } from "typeorm";
 import { AppDataSource } from "../data";
 import { AgendaEntity } from "./AgendaEntity";
 import { UserEntity } from "../Usuarios/UserEntity";
@@ -39,7 +39,14 @@ class AgendaRepository {
     };
 
     verificarAgendamento = async (user: number): Promise<AgendaEntity | null> => {
-        const agendamento = await this.database.findOneBy({ user: { id: user } });
+        const currentDate = new Date();
+        const agendamento = await this.database.findOne({
+            where: {
+                user: { id: user },
+                dia: MoreThan(currentDate.toISOString().split("T")[0] as string),
+            }
+        });
+        console.log("Agendamento encontrado:", agendamento);
         return agendamento;
     };
 
