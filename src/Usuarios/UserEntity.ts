@@ -9,8 +9,8 @@ export class UserEntity {
     @Column({ type: "varchar", length: 100, unique: true })
     name: string;
 
-    @Column({ type: "varchar", length: 20, default: "user" })
-    cargo: string;
+    @Column({ type: "varchar", length: 5 })
+    cargo!: string;
 
     @Column({ type: "varchar", length: 255 })
     email: string;
@@ -21,12 +21,9 @@ export class UserEntity {
     @OneToMany(() => AgendaEntity, (agenda) => agenda.user)
     agendas!: AgendaEntity[];
 
-    constructor(
-        name: string,
-        email: string,
-    ) {
+    constructor(name: string, email: string, cargo: string) {
         this.name = name;
         this.email = email;
-        this.cargo = "user";
+        this.cargo = cargo;
     }
 }

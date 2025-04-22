@@ -8,8 +8,8 @@ class UserRepository {
         this.database = repository;
     }
 
-    criarUsuario = async (name: string, email: string): Promise<UserEntity | null> => {
-        const userEntity = new UserEntity(name, email);
+    criarUsuario = async (name: string, email: string, cargo: string): Promise<UserEntity | null> => {
+        const userEntity = new UserEntity(name, email, cargo);
         try {
             return await this.database.save(userEntity);
         }

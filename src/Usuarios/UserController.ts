@@ -5,8 +5,12 @@ import jwt from "jsonwebtoken";
 
 export class UserController {
     public userPost = async (req: Request, res: Response) => {
-        const { credential, clientId } = req.body;
+        const { credential, clientId, role } = req.body;
         const { authorization } = req.headers;
+
+        let cargo = "user";
+        if (role == "1") cargo = "admin";
+        if (role == "2") cargo = "dono";
 
         if (credential && clientId) {
             const client = new OAuth2Client(clientId, credential);
@@ -20,11 +24,11 @@ export class UserController {
                     const { name, email } = payload;
                     let usuario = await db.verificarUsuario(email!);
                     if (!usuario) {
-                        usuario = await db.criarUsuario(name!, email!);
+                        usuario = await db.criarUsuario(name!, email!, cargo);
                         if (!usuario) new Error("Erro ao criar usuário");
                     }
                     const token = jwt.sign(
-                        { id: usuario?.id, name: usuario?.name, email: usuario?.email },
+                        { id: usuario?.id, name: usuario?.name, email: usuario?.email, cargo: usuario?.cargo },
                         process.env.JWT!,
                         { expiresIn: "7d" }
                     );
@@ -43,12 +47,20 @@ export class UserController {
 
         if (authorization) {
             const token = req.headers["authorization"]?.split(" ")[1];
-            jwt.verify(token!, process.env.JWT!, (err: any) => {
+            if (!token) {
+                res.status(401).json({ message: "Token não fornecido" });
+                return;
+            }
+            const decoded = jwt.decode(token as string) as { id: number; name: string; cargo: string };
+            jwt.verify(token, process.env.JWT!, (err: any) => {
                 if (err) {
                     res.status(401).json({ message: "Token inválido" });
                     return;
+                } else if (decoded.cargo == "user") {
+                    res.status(200).json({ message: "User: Token válido" });
+                    return;
                 } else {
-                    res.status(200).json({ message: "Token válido" });
+                    res.status(202).json({ message: "Admin: Token válido" });
                     return;
                 }
             });
