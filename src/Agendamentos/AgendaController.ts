@@ -73,16 +73,20 @@ export class AgendaController {
                 return;
             }
 
-            if (await db.verificarAgendamento(decoded.id)) {
-                res.status(409).send("Agendamento já existe para este usuário!");
-                return;
-            }
+            const agendamentoExistente = await db.verificarAgendamento(decoded.id);
 
-            const diaMarcado = await db.verificarDia(date.split("T")[0]);
-            if (diaMarcado.length > 0) {
-                res.status(401).send("Data já existe!");
+            if (agendamentoExistente && agendamentoExistente.length > 5) {
+                res.status(409).send("Agendamentos já atingiram o limite de 5");
                 return;
             }
+            
+            const diasMarcados = await db.verificarDia(date.split("T")[0]);
+            diasMarcados.forEach((diaMarcado) => {
+                if (diaMarcado.hora === horaFormatada) {
+                    res.status(409).send("Horário já agendado");
+                    return;
+                }
+            });
 
             if (
                 await db.criarAgendamento(

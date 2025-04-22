@@ -38,15 +38,14 @@ class AgendaRepository {
         return await this.database.findBy({ dia });
     };
 
-    verificarAgendamento = async (user: number): Promise<AgendaEntity | null> => {
+    verificarAgendamento = async (user: number): Promise<AgendaEntity[] | null> => {
         const currentDate = new Date();
-        const agendamento = await this.database.findOne({
+        const agendamento = await this.database.find({
             where: {
                 user: { id: user },
                 dia: MoreThan(currentDate.toISOString().split("T")[0] as string),
             }
         });
-        console.log("Agendamento encontrado:", agendamento);
         return agendamento;
     };
 
