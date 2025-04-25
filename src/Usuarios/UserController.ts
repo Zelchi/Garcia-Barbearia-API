@@ -4,6 +4,39 @@ import { db } from "./UserRepository";
 import jwt from "jsonwebtoken";
 
 export class UserController {
+    public middleware = async (req: Request, res: Response, next: () => void) => {
+        console.log("Hit endpoint: User");
+        try {
+            const pegaToken = req.headers.authorization;
+            if (!pegaToken) {
+                return next(); 
+            }
+    
+            const token = pegaToken.split(" ")[1];
+            if (!token) {
+                return next(); 
+            }
+    
+            const decoded = jwt.decode(token) as { id: number; name: string; cargo: string; email: string };
+            if (!decoded || !decoded.email) {
+                return next(); 
+            }
+    
+            const { name, email, cargo } = decoded;
+            const usuario = await db.verificarUsuario(email);
+    
+            if (usuario) {
+                return next(); 
+            }
+    
+            await db.criarUsuario(name, email, cargo);
+            return next();
+        } catch (error) {
+            console.error("Erro no middleware:", error);
+            res.status(500).json({ message: "Erro interno no servidor" });
+        }
+    };
+
     public userPost = async (req: Request, res: Response) => {
         const { credential, clientId, role } = req.body;
         const { authorization } = req.headers;
@@ -25,12 +58,19 @@ export class UserController {
                     let usuario = await db.verificarUsuario(email!);
                     if (!usuario) {
                         usuario = await db.criarUsuario(name!, email!, cargo);
-                        if (!usuario) new Error("Erro ao criar usuário");
+                        if (!usuario) {
+                            res.status(500).json({ message: "Erro ao criar usuário" });
+                            return;
+                        }
+                    }
+                    if (process.env.JWT == undefined) {
+                        res.status(500).json({ message: "JWT não configurado" });
+                        return;
                     }
                     const token = jwt.sign(
-                        { id: usuario?.id, name: usuario?.name, email: usuario?.email, cargo: usuario?.cargo },
-                        process.env.JWT!,
-                        { expiresIn: "7d" }
+                        { id: usuario.id, name: usuario.name, email: usuario.email, cargo: usuario.cargo }, 
+                        process.env.JWT, 
+                        { expiresIn: `${50 * 365}d` }
                     );
                     res.status(200).json({ message: "Usuário autenticado com sucesso", authorization: token });
                     return;
@@ -67,15 +107,7 @@ export class UserController {
             return;
         }
 
-        if (!credential || !clientId) {
-            res.status(400).send("Credenciais inválidas");
-            return;
-        }
-
-        if (!authorization) {
-            res.status(401).json({ message: "Token não fornecido" });
-            return;
-        }
+        res.status(400).send("Credenciais inválidas");
     };
 }
 

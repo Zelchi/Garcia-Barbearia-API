@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 export class AgendaController {
     public middleware = (req: Request, res: Response, next: NextFunction) => {
+        console.log("Hit endpoint: Agendamentos");
         const pegaToken = req.headers.authorization;
         const token = pegaToken?.split(" ")[1];
 
@@ -29,7 +30,7 @@ export class AgendaController {
     public userPost = async (req: Request, res: Response): Promise<void> => {
         const { date } = req.body;
         const token = req.headers.authorization?.split(" ")[1];
-        
+
         if (!date) {
             res.status(400).send("data é obrigatória");
             return;
@@ -58,18 +59,12 @@ export class AgendaController {
             const dia = data.getDay();
 
             if (dia === 0) {
-                res
-                    .status(400)
-                    .send("Agendamentos só podem ser feitos de Segunda-feira a Sábado");
+                res.status(400).send("Agendamentos só podem ser feitos de Segunda-feira a Sábado");
                 return;
             }
 
             if (hora < 11 || hora > 18 || (min !== 0 && min !== 30)) {
-                res
-                    .status(400)
-                    .send(
-                        "A data deve estar entre 11:00 e 18:00, em intervalos de 30 minutos"
-                    );
+                res.status(400).send("A data deve estar entre 11:00 e 18:00, em intervalos de 30 minutos");
                 return;
             }
 
@@ -79,32 +74,22 @@ export class AgendaController {
                 res.status(409).send("Agendamentos já atingiram o limite de 5");
                 return;
             }
-            
+
             const diasMarcados = await db.verificarDia(date.split("T")[0]);
-            diasMarcados.forEach((diaMarcado) => {
+            for (const diaMarcado of diasMarcados) {
                 if (diaMarcado.hora === horaFormatada) {
                     res.status(409).send("Horário já agendado");
                     return;
                 }
-            });
+            }
 
-            if (
-                await db.criarAgendamento(
-                    decoded.id,
-                    decoded.name,
-                    horaFormatada,
-                    diaFormatada
-                )
-            ) {
-                res.status(201).send("Agendamento criado com sucesso");
+            if (await db.criarAgendamento(decoded.id, decoded.name, horaFormatada, diaFormatada)) {
+                res.status(200).send("Agendamento criado com sucesso");
             } else {
                 res.status(500).send("Erro ao criar agendamento");
             }
         } catch (error) {
-            console.error(
-                "< Agendamentos -> Controller -> Erro ao criar agendamento:",
-                error
-            );
+            console.error("< Agendamentos -> Controller -> Erro ao criar agendamento:", error);
             res.status(500).send("Erro ao criar agendamento");
         }
     };
@@ -119,10 +104,7 @@ export class AgendaController {
                 res.status(200).send(agendamentos);
                 return;
             } catch (error) {
-                console.error(
-                    "< Agendamentos -> Controller -> Erro ao buscar todos os agendamentos:",
-                    error
-                );
+                console.error("< Agendamentos -> Controller -> Erro ao buscar todos os agendamentos:", error);
                 res.status(500).send("Erro ao buscar agendamentos");
                 return;
             }
@@ -133,16 +115,11 @@ export class AgendaController {
                     res.status(200).send(agendamentos);
                     return;
                 } else {
-                    res
-                        .status(404)
-                        .send("Nenhum agendamento encontrado para este usuário");
+                    res.status(404).send("Nenhum agendamento encontrado para este usuário");
                     return;
                 }
             } catch (error) {
-                console.error(
-                    "< Agendamentos -> Controller -> Erro ao buscar agendamentos:",
-                    error
-                );
+                console.error("< Agendamentos -> Controller -> Erro ao buscar agendamentos:", error);
                 res.status(500).send("Erro ao buscar agendamentos");
                 return;
             }
@@ -160,10 +137,7 @@ export class AgendaController {
                 res.status(200).send("Agendamento deletado com sucesso");
                 return;
             } catch (error) {
-                console.error(
-                    "< Agendamentos -> Controller -> Erro ao deletar agendamento:",
-                    error
-                );
+                console.error("< Agendamentos -> Controller -> Erro ao deletar agendamento:", error);
                 res.status(500).send("Erro ao deletar agendamento");
                 return;
             }
@@ -190,7 +164,6 @@ export class AgendaController {
             }
 
             if (diasDisponiveis.length > 0) {
-                console.log(diasDisponiveis);
                 res.status(200).json(diasDisponiveis);
                 return;
             } else {
@@ -256,10 +229,7 @@ export class AgendaController {
             res.status(200).json(horariosDisponiveis);
             return;
         } catch (error) {
-            console.error(
-                "Agendamentos -> Controller -> Erro ao buscar horários disponíveis:",
-                error
-            );
+            console.error("Agendamentos -> Controller -> Erro ao buscar horários disponíveis:", error);
             res.status(500).send("Erro ao buscar horários disponíveis");
             return;
         }
