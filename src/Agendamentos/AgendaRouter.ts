@@ -5,7 +5,7 @@ import { agendaController } from "./AgendaController";
 
 // Rota para verificar horarios disponiveis
 router.get("/dias", (req, res) => agendaController.diasGet(req, res));
-router.get("/horarios", (req, res) => agendaController.horariosGet(req, res));
+router.get("/horarios/:data", (req, res) => agendaController.horariosGet(req, res));
 // Middleware para verificar se o usuário está autenticado
 router.use((req, res, next) => {agendaController.middleware(req, res, next)});
 // Rota para visualizar agendamento

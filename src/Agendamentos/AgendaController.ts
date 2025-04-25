@@ -190,6 +190,7 @@ export class AgendaController {
             }
 
             if (diasDisponiveis.length > 0) {
+                console.log(diasDisponiveis);
                 res.status(200).json(diasDisponiveis);
                 return;
             } else {
@@ -207,7 +208,7 @@ export class AgendaController {
     };
 
     public horariosGet = async (req: Request, res: Response): Promise<void> => {
-        const data = req.query.data as string;
+        const { data } = req.params;
 
         if (!data) {
             res.status(400).send("Data é obrigatória");
