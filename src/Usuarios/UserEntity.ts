@@ -6,6 +6,12 @@ export class UserEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
+    @Column({ type: "varchar", length: 100, unique: true, nullable: true })
+    idGoogle: string;
+
+    @Column({ type: "varchar", length: 100, unique: true, nullable: true })
+    idApple: string;
+
     @Column({ type: "varchar", length: 100, unique: true })
     name: string;
 
@@ -21,9 +27,11 @@ export class UserEntity {
     @OneToMany(() => AgendaEntity, (agenda) => agenda.user)
     agendas!: AgendaEntity[];
 
-    constructor(name: string, email: string, cargo: string) {
+    constructor(name: string, email: string, cargo: string, google: string, apple: string) {
         this.name = name;
         this.email = email;
         this.cargo = cargo;
+        this.idGoogle = google;
+        this.idApple = apple;
     }
 }

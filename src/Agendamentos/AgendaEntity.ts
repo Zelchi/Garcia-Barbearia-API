@@ -1,4 +1,4 @@
-import { PrimaryGeneratedColumn, Column, Entity, ManyToOne, DeleteDateColumn } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from "typeorm";
 import { UserEntity } from "../Usuarios/UserEntity";
 
 @Entity("Agendamentos")
@@ -17,9 +17,6 @@ export class AgendaEntity {
 
     @Column({ type: "date", default: () => "CURRENT_TIMESTAMP" })
     creation!: Date;
-
-    @DeleteDateColumn({ type: "date", nullable: true })
-    deletedAt?: Date | null;
 
     @ManyToOne(() => UserEntity, (user) => user.agendas)
     user!: UserEntity;

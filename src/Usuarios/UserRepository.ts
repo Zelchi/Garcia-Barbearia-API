@@ -8,8 +8,8 @@ class UserRepository {
         this.database = repository;
     }
 
-    criarUsuario = async (name: string, email: string, cargo: string): Promise<UserEntity | null> => {
-        const userEntity = new UserEntity(name, email, cargo);
+    criarUsuario = async (name: string, email: string, cargo: string, idGoogle: string, idApple: string): Promise<UserEntity | null> => {
+        const userEntity = new UserEntity(name, email, cargo, idGoogle, idApple);
         try {
             return await this.database.save(userEntity);
         }
@@ -22,6 +22,30 @@ class UserRepository {
     verificarUsuario = async (email: string): Promise<UserEntity | null> => {
         const usuario = await this.database.findOneBy({ email });
         return usuario;
+    }
+
+    vincularGoogle = async (email: string, idGoogle: string): Promise<UserEntity | null> => {
+        const usuario = await this.database.findOneBy({ email });
+        if (!usuario) return null;
+        usuario.idGoogle = idGoogle;
+        try {
+            return await this.database.save(usuario);
+        } catch (error) {
+            console.error("UserRepository -> atualizarUsuarioGoogle -> ", error);
+            return null;
+        }
+    }
+
+    vincularApple = async (email: string, idApple: string): Promise<UserEntity | null> => {
+        const usuario = await this.database.findOneBy({ email });
+        if (!usuario) return null;
+        usuario.idApple = idApple;
+        try {
+            return await this.database.save(usuario);
+        } catch (error) {
+            console.error("UserRepository -> atualizarUsuarioApple -> ", error);
+            return null;
+        }
     }
 }
 
