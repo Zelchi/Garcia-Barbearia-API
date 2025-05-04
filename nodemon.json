@@ -1,3 +1,4 @@
 {
-    "ignore": ["*.json", "dist/*"]
+    "watch": ["src"],
+    "ignore": ["dist", "node_modules"]
 }

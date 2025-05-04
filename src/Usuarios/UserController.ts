@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 
 export class UserController {
     public middleware = async (req: Request, res: Response, next: () => void) => {
-        console.log("Hit endpoint: User");
         try {
             const pegaToken = req.headers.authorization;
             if (!pegaToken) {

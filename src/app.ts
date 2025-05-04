@@ -1,9 +1,12 @@
 import { AppDataSource } from "./data";
 import express from "express";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import swaggerJson from "./swagger.json";
 
 const app = express();
 app.use(express.json());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
 const allowedOrigins = ["http://localhost:5173", "http://localhost:4173"]
 app.use(cors({

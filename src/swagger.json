@@ -1,0 +1,271 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Garcia Barbearia API",
+        "description": "API para gerenciamento de usuários e agendamentos da Garcia Barbearia"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Servidor local"
+        }
+    ],
+    "paths": {
+        "/usuarios": {
+            "post": {
+                "summary": "Cria um novo usuário ou renova o token",
+                "tags": ["Usuario"],
+                "requestBody": {
+                    "description": "Dados necessários para criar ou renovar o token do usuário",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "Authorization": {
+                                        "type": "string",
+                                        "description": "Token de autenticação"
+                                    },
+                                    "credential": {
+                                        "type": "string",
+                                        "description": "Credenciais do usuário"
+                                    },
+                                    "clientId": {
+                                        "type": "string",
+                                        "description": "ID do cliente"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "description": "Papel do usuário"
+                                    }
+                                },
+                                "required": ["Authorization", "credential", "clientId", "role"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário criado com sucesso"
+                    },
+                    "400": {
+                        "description": "Erro nos dados enviados"
+                    }
+                }
+            }
+        },
+        "/agendamentos": {
+            "get": {
+                "summary": "Obtém a lista de agendamentos",
+                "tags": ["Agendamento"],
+                "responses": {
+                    "200": {
+                        "description": "Lista de agendamentos retornada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "description": "ID do agendamento"
+                                            },
+                                            "data": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "description": "Data e hora do agendamento"
+                                            },
+                                            "cliente": {
+                                                "type": "string",
+                                                "description": "Nome do cliente"
+                                            },
+                                            "servico": {
+                                                "type": "string",
+                                                "description": "Serviço agendado"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Cria um novo agendamento",
+                "tags": ["Agendamento"],
+                "requestBody": {
+                    "description": "Dados do novo agendamento",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "data": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Data e hora do agendamento"
+                                    },
+                                    "cliente": {
+                                        "type": "string",
+                                        "description": "Nome do cliente"
+                                    },
+                                    "servico": {
+                                        "type": "string",
+                                        "description": "Serviço a ser realizado"
+                                    }
+                                },
+                                "required": ["data", "cliente", "servico"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Agendamento criado com sucesso"
+                    },
+                    "400": {
+                        "description": "Erro nos dados enviados"
+                    }
+                }
+            }
+        },
+        "/agendamentos/dias": {
+            "get": {
+                "summary": "Obtém os dias disponíveis para agendamento",
+                "tags": ["Agendamento"],
+                "responses": {
+                    "200": {
+                        "description": "Dias disponíveis retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "description": "Data disponível"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agendamentos/horarios/{data}": {
+            "get": {
+                "summary": "Obtém os horários disponíveis para uma data específica",
+                "tags": ["Agendamento"],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "path",
+                        "required": true,
+                        "description": "Data para verificar os horários disponíveis",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Horários disponíveis retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "description": "Horário disponível"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agendamentos/{id}": {
+            "get": {
+                "summary": "Obtém os detalhes de um agendamento específico",
+                "tags": ["Agendamento"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID do agendamento",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do agendamento retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "ID do agendamento"
+                                        },
+                                        "data": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "description": "Data e hora do agendamento"
+                                        },
+                                        "cliente": {
+                                            "type": "string",
+                                            "description": "Nome do cliente"
+                                        },
+                                        "servico": {
+                                            "type": "string",
+                                            "description": "Serviço agendado"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Agendamento não encontrado"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Remove um agendamento específico",
+                "tags": ["Agendamento"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID do agendamento a ser removido",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agendamento removido com sucesso"
+                    },
+                    "404": {
+                        "description": "Agendamento não encontrado"
+                    }
+                }
+            }
+        }
+    }
+}
